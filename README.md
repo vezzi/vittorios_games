@@ -26,8 +26,10 @@ La partita si salva nel browser. Per riprenderla, usa lo stesso browser e lo ste
 
 1. Premi **Modifica** per scegliere le pedine e i nomi dei giocatori.
 2. Quando tocca a te, premi **Lancia il dado** o fai clic sul dado rosso.
-3. Conta i puntini e premi **Muovi**, oppure tocca la tua pedina. Alla fine dei passi si apre la casella. L’altoparlante attiva la voce italiana, disponibile anche offline. Con **Pausa** puoi fermare la scena e con **Rivedi** puoi guardarla di nuovo.
+3. Conta i puntini e premi **Muovi**, oppure tocca la tua pedina. Segui le frecce da un numero al successivo. La fascia bianca separa i giri della spirale. Alla fine dei passi si apre la casella. L’altoparlante attiva la voce italiana, disponibile anche offline. Con **Pausa** puoi fermare la scena e con **Rivedi** puoi guardarla di nuovo.
 4. Segui quello che fa il tuo personaggio. Sulla 29 la strega gli porge una caramella, poi la pedina vola fino alla 5. Il gioco prosegue da solo. Puoi anche premere **Vola al 5** per partire subito. Vince chi raggiunge la maga.
 5. **Trova pedina** avvicina la visuale a chi è di turno. In **Esplora le caselle** puoi sfogliare il percorso e premere **Guarda sul tavolo** per ritrovare una casella sulla plancia. Il pulsante **Ripristina la prospettiva** torna alla vista d’insieme.
 
-![Il tabellone di Pimpa con le pedine e il dado sul tavolo 3D](pimpa/anteprima.jpg)
+[Guarda il percorso dall’alto](pimpa/dist/assets/illustrazioni-tabellone.webp)
+
+![Il percorso a spirale di Pimpa con le pedine e il dado sul tavolo 3D](pimpa/anteprima.jpg)
