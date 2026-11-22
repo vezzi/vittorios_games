@@ -3,8 +3,8 @@
   const W = 5.8,
     D = (W * 7) / 5,
     boardY = 0.135;
-  const initialBearing = 0.29,
-    initialElevation = 0.9;
+  const initialBearing = 0.12,
+    initialElevation = 1.03;
   const ids = Object.keys(PimpaGame.characters);
   const reducedMotion = () =>
     matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -228,6 +228,18 @@
     paper.position.y = boardY;
     paper.receiveShadow = true;
     scene.add(paper);
+    // The printed square stays visible inside a narrow gold outline.
+    const tileWidth = W * PimpaBoard.cellWidth / PimpaBoard.width;
+    const tileDepth = D * PimpaBoard.cellHeight / PimpaBoard.height;
+    const border = roundedShape(tileWidth * .96, tileDepth * .96, .07);
+    border.holes.push(roundedShape(tileWidth * .88, tileDepth * .88, .05));
+    const outline = new T.Mesh(new T.ShapeGeometry(border), new T.MeshBasicMaterial({
+      color: 0xffce45, toneMapped: false,
+    }));
+    outline.rotation.x = -Math.PI / 2;
+    outline.visible = false;
+    scene.add(outline);
+
     const die = PimpaDie.create(T);
     scene.add(die.object);
     const dieHome = new T.Vector3(W / 2 + 0.77, 0, D * 0.32);
@@ -258,6 +270,31 @@
     function cellPoint(n) {
       const [u, v] = PimpaBoard.center(n);
       return new T.Vector3((u - 0.5) * W, boardY + 0.004, (v - 0.5) * D);
+    }
+    function highlight(n) {
+      outline.visible = n != null;
+      if (outline.visible) {
+        outline.position.copy(cellPoint(n));
+        outline.position.y += .012;
+      }
+      dirty = true;
+    }
+    function screenPoint(n) {
+      const point = cellPoint(n).project(camera);
+      const rect = canvas.getBoundingClientRect();
+      return { x: rect.left + (1 + point.x) * rect.width / 2,
+        y: rect.top + (1 - point.y) * rect.height / 2 };
+    }
+    function revealPath(numbers) {
+      const fr = frame.getBoundingClientRect();
+      if (numbers.some(n => {
+        const {x, y} = screenPoint(n);
+        return x < fr.left + 20 || x > fr.right - 20 || y < fr.top + 24 || y > fr.bottom - 20;
+      })) {
+        focused = null;
+        zoom = 1;
+        view();
+      }
     }
     function occupiedPoint(id, n) {
       const point = cellPoint(n);
@@ -330,7 +367,8 @@
     let bearing = initialBearing,
       elevation = initialElevation,
       zoom = 1,
-      overhead = false;
+      overhead = false,
+      focused = null;
     const focus = new T.Vector3(0, 0.16, 0);
     const bounds = [];
     for (const x of [-W / 2, W / 2])
@@ -345,6 +383,7 @@
         fr = frame.getBoundingClientRect();
       const w = Math.max(1, rect.width),
         h = Math.max(1, rect.height);
+      focus.set(0, 0.16, 0);
       renderer.setSize(w, h, false);
       camera.clearViewOffset();
       camera.aspect = w / h;
@@ -385,6 +424,10 @@
       // Use the same framing centre while zooming so a close-up really does crop into the table.
       const fitted = projected(hi),
         center = fitted.getCenter(new T.Vector2());
+      if (focused !== null) {
+        focus.copy(cellPoint(focused));
+        center.set(w / 2, h / 2);
+      }
       place(hi / zoom);
       const desiredX = fr.left - rect.left + fr.width / 2,
         desiredY = fr.top - rect.top + fr.height / 2;
@@ -399,7 +442,16 @@
       camera.updateProjectionMatrix();
       dirty = true;
     }
-    function setView(mode) {
+    function setView(mode, n) {
+      if (mode === "cell") {
+        focused = n;
+        zoom = 1.85;
+        highlight(n);
+      }
+      if (mode === "reset" || mode === "top") {
+        focused = null;
+        highlight(null);
+      }
       if (mode === "reset") {
         bearing = initialBearing;
         elevation = initialElevation;
@@ -574,7 +626,7 @@
     view();
     requestAnimationFrame(tick);
     return {
-      setPieces,
+      setPieces, highlight, screenPoint, revealPath,
       hop,
       setView,
       setDie(value) {

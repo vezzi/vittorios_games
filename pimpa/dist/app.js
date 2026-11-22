@@ -200,6 +200,7 @@
       "play-button",
       "new-game",
       "edit-players",
+      "find-pawn",
       "inspect-cells",
       "rules-button",
     ].forEach((id) => {
@@ -233,6 +234,7 @@
     return button;
   }
   function showCell(n) {
+    table?.highlight(n);
     const cell = cells[n];
     modalHeading(n === 0 || n === finish ? cell.name : `Casella ${n}`);
     const info = el("div", "tile-detail");
@@ -260,7 +262,24 @@
       ),
     );
     body.append(info);
-    modalButton("Torna al tabellone", () => modal.close());
+    const browse = el("div", "browse-cells");
+    const previous = el("button", "", "← Precedente");
+    const next = el("button", "", "Successiva →");
+    previous.disabled = n === 0;
+    next.disabled = n === finish;
+    function browseTo(number, index) {
+      showCell(number);
+      const arrows = body.querySelectorAll(".browse-cells button");
+      (arrows[index].disabled ? arrows[1 - index] : arrows[index]).focus();
+    }
+    previous.onclick = () => browseTo(n - 1, 0);
+    next.onclick = () => browseTo(n + 1, 1);
+    browse.append(previous, next);
+    body.append(browse);
+    modalButton("Guarda sul tavolo", () => {
+      table.setView("cell", n);
+      modal.close();
+    }, "search");
     openModal();
   }
   function showRules() {
@@ -517,6 +536,7 @@
       modal.close();
   });
   const setView = (mode) => table?.setView(mode);
+  $("find-pawn").onclick = () => table?.setView("cell", game.players[game.active].position);
   $("view-reset").onclick = () => setView("reset");
   $("view-top").onclick = () => setView("top");
   $("zoom-in").onclick = () => setView("in");

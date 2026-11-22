@@ -10,30 +10,33 @@
     };
     const surface = node("div", "compat-surface"),
       board = node("div", "compat-board");
+    const buttons = new Map();
     const coordinates = new Map(),
       pieces = new Map();
     const ids = Object.keys(PimpaGame.characters);
     let roster = [],
       active,
-      angle = 9,
-      tilt = 33,
-      zoom = 1;
+      angle = -4,
+      tilt = 25,
+      zoom = 1,
+      focused = null;
     host.replaceChildren(surface);
     surface.append(board);
     PimpaBoard.tiles.forEach((tile, n) => {
-        const btn = node("button", "compat-cell");
-        const [u, v] = PimpaBoard.center(n);
-        coordinates.set(n, [u * 500, v * 700]);
-        Object.assign(btn.style, {
-          left: tile.x / 2 + "px", top: tile.y / 2 + "px",
-          width: PimpaBoard.cellWidth / 2 + "px", height: PimpaBoard.cellHeight / 2 + "px",
-        });
-        btn.setAttribute(
-          "aria-label",
-          n === 0 ? "Partenza" : n === 31 ? "Arrivo" : "Casella " + n,
-        );
-        btn.onclick = () => actions.onCell(n);
-        board.append(btn);
+      const btn = node("button", "compat-cell");
+      const [u, v] = PimpaBoard.center(n);
+      coordinates.set(n, [u * 500, v * 700]);
+      Object.assign(btn.style, {
+        left: tile.x / 2 + "px", top: tile.y / 2 + "px",
+        width: PimpaBoard.cellWidth / 2 + "px", height: PimpaBoard.cellHeight / 2 + "px",
+      });
+      btn.setAttribute(
+        "aria-label",
+        n === 0 ? "Partenza" : n === 31 ? "Arrivo" : "Casella " + n,
+      );
+      btn.onclick = () => actions.onCell(n);
+      board.append(btn);
+      buttons.set(n, btn);
     });
     for (const id of ids) {
       const spot = node("button", "compat-pawn"),
@@ -107,6 +110,24 @@
           "rotateY(180deg)",
         ][value - 1];
     }
+    function screenPoint(n) {
+      const rect = buttons.get(n).getBoundingClientRect();
+      return {x: rect.left + rect.width / 2, y: rect.top + rect.height / 2};
+    }
+    function highlight(n) {
+      buttons.forEach((button, i) => button.classList.toggle("lit", n === i));
+    }
+    function revealPath(numbers) {
+      const rect = frame.getBoundingClientRect();
+      if (numbers.some(n => {
+        const {x, y} = screenPoint(n);
+        return x < rect.left + 20 || y < rect.top + 24 || x > rect.right - 20 || y > rect.bottom - 20;
+      })) {
+        focused = null;
+        zoom = 1;
+        view();
+      }
+    }
     function view() {
       const rect = host.getBoundingClientRect(),
         f = frame.getBoundingClientRect();
@@ -119,17 +140,33 @@
         zoom;
       surface.style.left = f.left - rect.left + f.width * 0.49 + "px";
       surface.style.top = f.top - rect.top + f.height * 0.49 + "px";
+      board.style.setProperty("--stand-angle", -Math.max(28, tilt + 23) + "deg");
       board.style.transform = `scale(${scale}) rotateX(${tilt}deg) rotateZ(${angle}deg)`;
+      if (focused !== null) {
+        const pt = screenPoint(focused);
+        surface.style.left = parseFloat(surface.style.left) + f.left + f.width / 2 - pt.x + "px";
+        surface.style.top = parseFloat(surface.style.top) + f.top + f.height / 2 - pt.y + "px";
+      }
     }
-    function setView(mode) {
+    function setView(mode, n) {
+      if (mode === "cell") {
+        focused = n;
+        zoom = 1.85;
+        highlight(n);
+      }
+      if (mode === "reset" || mode === "top") {
+        focused = null;
+        highlight(null);
+      }
       if (mode === "reset") {
-        angle = 9;
-        tilt = 33;
+        angle = -4;
+        tilt = 25;
         zoom = 1;
       }
       if (mode === "top") {
-        tilt = tilt === 5 ? 33 : 5;
-        angle = tilt === 5 ? 0 : 9;
+        tilt = tilt === 5 ? 25 : 5;
+        angle = tilt === 5 ? 0 : -4;
+        zoom = 1;
       }
       if (mode === "in" || mode === "out")
         zoom = Math.max(
@@ -185,7 +222,7 @@
     new ResizeObserver(view).observe(frame);
     view();
     return {
-      setView,
+      setView, highlight, screenPoint, revealPath,
       setDie,
       setPieces(people, id) {
         roster = people;
