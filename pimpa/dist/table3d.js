@@ -228,12 +228,17 @@
     paper.position.y = boardY;
     paper.receiveShadow = true;
     scene.add(paper);
-    // The printed square stays visible inside a narrow gold outline.
     const tileWidth = W * PimpaBoard.cellWidth / PimpaBoard.width;
     const tileDepth = D * PimpaBoard.cellHeight / PimpaBoard.height;
-    const border = roundedShape(tileWidth * .96, tileDepth * .96, .07);
-    border.holes.push(roundedShape(tileWidth * .88, tileDepth * .88, .05));
-    const outline = new T.Mesh(new T.ShapeGeometry(border), new T.MeshBasicMaterial({
+    const borders = PimpaBoard.tiles.map(tile => {
+      const points = tile.outline.map(([u, v]) =>
+        new T.Vector2((u - .5) * tileWidth, (.5 - v) * tileDepth));
+      const border = new T.Shape(points);
+      const inner = points.map(point => point.clone().multiplyScalar(.91)).reverse();
+      border.holes.push(new T.Path(inner));
+      return new T.ShapeGeometry(border);
+    });
+    const outline = new T.Mesh(borders[0], new T.MeshBasicMaterial({
       color: 0xffce45, toneMapped: false,
     }));
     outline.rotation.x = -Math.PI / 2;
@@ -274,6 +279,7 @@
     function highlight(n) {
       outline.visible = n != null;
       if (outline.visible) {
+        outline.geometry = borders[n];
         outline.position.copy(cellPoint(n));
         outline.position.y += .012;
       }

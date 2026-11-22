@@ -29,7 +29,16 @@
       Object.assign(btn.style, {
         left: tile.x / 2 + "px", top: tile.y / 2 + "px",
         width: PimpaBoard.cellWidth / 2 + "px", height: PimpaBoard.cellHeight / 2 + "px",
+        clipPath: "polygon(" + tile.outline.map(([u, v]) => `${u * 100}% ${v * 100}%`).join(",") + ")",
       });
+      const mark = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      mark.setAttribute("viewBox", "0 0 1 1");
+      mark.setAttribute("preserveAspectRatio", "none");
+      mark.setAttribute("aria-hidden", "true");
+      const edge = document.createElementNS(mark.namespaceURI, "polygon");
+      edge.setAttribute("points", tile.outline.map(point => point.join(",")).join(" "));
+      mark.append(edge);
+      btn.append(mark);
       btn.setAttribute(
         "aria-label",
         n === 0 ? "Partenza" : n === 31 ? "Arrivo" : "Casella " + n,

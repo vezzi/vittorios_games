@@ -1197,9 +1197,18 @@ body {
   width: auto;
   padding: 0 10px;
 }
-.compat-cell.lit {
-  border: 4px solid #ffce45;
-  border-radius: 9px;
+.compat-cell svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-width: .085;
+  pointer-events: none;
+}
+.compat-cell.lit polygon { stroke: #ffce45; }
+.compat-cell:focus-visible polygon {
+  stroke: #13599a;
 }
 .browse-cells {
   display: flex;

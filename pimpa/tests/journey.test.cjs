@@ -27,6 +27,31 @@ test("la stampa, la selezione delle caselle e le storie usano lo stesso percorso
   assert.equal(PimpaBoard.cellAt(0, 0), null);
 });
 
+test("ogni casella è unita solo alla precedente e alla successiva, anche in curva", () => {
+  const board = PimpaBoard;
+  const sample = (tile, x, y) => board.cellAt(
+    (tile.x + x * board.cellWidth) / board.width,
+    (tile.y + y * board.cellHeight) / board.height,
+  );
+  for (const [r, row] of PimpaGame.layout.entries()) {
+    for (const [c, n] of row.entries()) {
+      if (n === null) continue;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const neighbor = PimpaGame.layout[r + dy]?.[c + dx];
+        const joined = Number.isInteger(neighbor) && Math.abs(n - neighbor) === 1;
+        for (const across of [-.25, 0, .25]) {
+          const x = .5 + dy * across, y = .5 + dx * across;
+          assert.equal(sample(board.tiles[n], x + dx*.48, y + dy*.48), joined ? n : null);
+          assert.equal(sample(board.tiles[n], x + dx*.52, y + dy*.52), joined ? neighbor : null);
+        }
+      }
+    }
+  }
+  // White paper shows through both the outer and the inner bend at the crow.
+  assert.equal(sample(board.tiles[4], .87, .13), null);
+  assert.equal(sample(board.tiles[4], .02, .98), null);
+});
+
 test("un arrivo ripreso in qualsiasi fase applica la regola una volta sola", () => {
   for (let start = 0; start < finish; start++) {
     for (let die = 1; die <= 6; die++) {

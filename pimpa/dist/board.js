@@ -58,9 +58,19 @@
     return [(tiles[n].x + cellWidth / 2) / width, (tiles[n].y + cellHeight / 2) / height];
   }
   function cellAt(u, v) {
-    const c = Math.floor((u * width - left) / cellWidth);
-    const r = Math.floor((v * height - top) / cellHeight);
-    return PimpaGame.layout[r]?.[c] ?? null;
+    const gx = (u * width - left) / cellWidth, gy = (v * height - top) / cellHeight;
+    const c = Math.floor(gx), r = Math.floor(gy);
+    const n = PimpaGame.layout[r]?.[c];
+    if (n == null) return null;
+    const x = gx - c, y = gy - r;
+    const points = tiles[n].outline;
+    let inside = false;
+    // A ray to the right crosses the coloured outline an odd number of times.
+    for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+      const [ax, ay] = points[j], [bx, by] = points[i];
+      if ((ay > y) !== (by > y) && x < ax + (y - ay) * (bx - ax) / (by - ay)) inside = !inside;
+    }
+    return inside ? n : null;
   }
   globalThis.PimpaBoard = { width, height, left, top, cellWidth, cellHeight, tiles, art, image, center, cellAt };
 })();
