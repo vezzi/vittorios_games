@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#33281e" />
+    <title>Il gioco dell’oca di Pimpa</title>
+    <meta
+      name="description"
+      content="Siediti al tavolo con Pimpa, Tito, Colombina e Olivia. Un gioco dell’oca tridimensionale da giocare insieme."
+    />
+    <link rel="icon" type="image/png" href="assets/characters/pimpa.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="vendor/three.min.js"></script>
+    <script defer src="game.js"></script>
+    <script defer src="die3d.js"></script>
+    <script defer src="pawn3d.js"></script>
+    <script defer src="table3d.js"></script>
+    <script defer src="table-compatible.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="table-header">
+      <div class="identity">
+        <span class="wordmark">Pimpa</span><span class="header-rule"></span>
+        <h1>Il gioco dell’oca</h1>
+      </div>
+      <nav aria-label="Comandi della partita">
+        <button id="sound-button" class="header-tool"></button>
+        <button
+          id="rules-button"
+          aria-label="Regole"
+          title="Regole"
+          class="header-tool"
+        >
+          <i data-icon="book"></i><span>Regole</span>
+        </button>
+        <button
+          id="new-game"
+          aria-label="Nuova partita"
+          title="Nuova partita"
+          class="header-tool"
+        >
+          <i data-icon="restart"></i><span>Nuova partita</span>
+        </button>
+      </nav>
+    </header>
+    <main class="stage">
+      <div id="scene" aria-label="Tavolo da gioco tridimensionale"></div>
+      <div class="scene-shade" aria-hidden="true"></div>
+      <div id="scene-frame" aria-hidden="true"></div>
+      <div id="scene-loading" role="status">Apparecchiamo il tavolo…</div>
+      <div class="view-tools" role="group" aria-label="Visuale del tavolo">
+        <button
+          id="view-reset"
+          title="Ripristina la prospettiva"
+          aria-label="Ripristina la prospettiva"
+        >
+          <i data-icon="perspective"></i>
+        </button>
+        <button
+          id="view-top"
+          title="Vista dall’alto"
+          aria-label="Vista dall’alto"
+          aria-pressed="false"
+        >
+          <i data-icon="board"></i>
+        </button>
+        <span></span>
+        <button id="zoom-out" title="Allontana" aria-label="Allontana">
+          <i data-icon="minus"></i>
+        </button>
+        <button id="zoom-in" title="Avvicina" aria-label="Avvicina">
+          <i data-icon="plus"></i>
+        </button>
+      </div>
+      <div class="rail">
+        <section class="turn-panel panel" aria-labelledby="current-name">
+          <div class="turn-banner">
+            <div class="sun-lines" aria-hidden="true"></div>
+            <div class="turn-text">
+              <div class="turn-label">
+                <span></span><span id="turn-label">DI TURNO</span>
+              </div>
+              <h2 id="current-name">Pimpa</h2>
+              <span class="position" id="current-position"></span>
+            </div>
+            <img
+              id="hero-character"
+              class="hero-character"
+              src="assets/characters/pimpa.png"
+              alt=""
+            /><i class="banner-star" data-icon="sparkle"></i>
+          </div>
+          <div class="turn-controls">
+            <div class="dice-caption">
+              <h3 id="dice-caption">Il dado è pronto!</h3>
+              <p id="dice-hint">Lancialo sul tavolo per iniziare.</p>
+            </div>
+            <button id="play-button" class="primary">
+              <i data-icon="die"></i><span>Lancia il dado</span>
+            </button>
+          </div>
+        </section>
+        <section class="players-panel panel" aria-labelledby="players-title">
+          <div class="section-head">
+            <h2 id="players-title"><i data-icon="people"></i>Giocatori</h2>
+            <button id="edit-players" class="text-button">
+              <i data-icon="pencil"></i>Modifica
+            </button>
+          </div>
+          <ul id="player-list" class="player-list"></ul>
+        </section>
+        <div id="last-move" class="last-move" hidden>
+          <i data-icon="trail"></i>
+          <div>
+            <strong>Ultima mossa</strong>
+            <p id="last-text"></p>
+          </div>
+        </div>
+      </div>
+      <div class="scene-bottom">
+        <span class="view-hint"
+          ><i data-icon="hand"></i>Trascina per ruotare il tavolo</span
+        ><button id="inspect-cells">
+          <i data-icon="search"></i> Esplora le caselle
+        </button>
+      </div>
+    </main>
+    <div
+      id="announcement"
+      class="sr-only"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <dialog id="modal"><div class="dialog-body" id="modal-body"></div></dialog>
+    <noscript>Per giocare, attiva JavaScript nel browser.</noscript>
+  </body>
+</html>
