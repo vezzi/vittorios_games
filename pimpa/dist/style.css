@@ -1213,3 +1213,74 @@ body {
   border-radius: 8px;
 }
 .browse-cells button:disabled { opacity: .4; }
+
+/* A printed story card unfolds from the square where the pawn stopped. */
+#arrival {
+  width: min(445px, calc(100% - 22px));
+  color: #173e3c;
+  background: #fff8e7;
+  border: 3px solid #244f49;
+  border-radius: 20px;
+  box-shadow: 0 5px 0 #d5b57f, 0 8px 0 #594d39, 0 20px 65px #171a1866;
+}
+#arrival[open] { animation: none; }
+#arrival::backdrop { background: #202d2c80; backdrop-filter: blur(1.5px); }
+.story-head, .story-controls, .story-outcome, .story-controls button, .story-audio {
+  display: flex;
+  align-items: center;
+}
+.story-head {
+  gap: 12px;
+  padding: 12px 17px;
+  background: #1e5851;
+  color: #fff3d0;
+  border-bottom: 3px solid #e6c378;
+}
+.story-head h2 { font-size: clamp(1.25rem, 5vw, 1.75rem); line-height: 1.06; }
+.story-head > div { min-width: 0; }
+#story-player { display: block; font-size: .83rem; color: #ffe3a2; overflow-wrap: anywhere; }
+.story-token, #story-symbol {
+  flex: none; display: grid; place-items: center; border-radius: 50%;
+  font: 800 1.6rem var(--display); color: #174f49; background: #ffe5a2;
+}
+.story-token { width: 47px; height: 47px; border: 2px solid #ffefc9; box-shadow: inset 0 0 0 2px #be9b53; }
+.story-audio { justify-content: center; margin-left: auto; border: 1px solid #97b3a1; border-radius: 50%; width: 38px; height: 38px; flex: none; color: #fff3ce; }
+#story-stage {
+  position: relative; isolation: isolate; overflow: hidden; width: 100%; aspect-ratio: 1.95;
+  background: #add9bc url("assets/illustrations/bosco.webp") 50% 57% / cover;
+  border-bottom: 2px solid #ddcda2;
+}
+.puppet {
+  position: absolute; bottom: 9%; height: 69%; width: 32%;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 2px 0 #fff4d0) drop-shadow(1px 3px 2px #213b3945);
+}
+.puppet img, #story-prop img, #story-prop svg { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+#story-actor { left: 9%; z-index: 2; }
+#story-pawn { left: 62%; width: 24%; height: 54%; z-index: 3; }
+#story-pawn img { transform: scaleX(-1); }
+#story-pawn.solo { left: 37%; height: 63%; }
+#story-stage[data-cell="11"] #story-actor, #story-stage[data-cell="30"] #story-actor { z-index: 4; }
+#story-stage[data-cell="9"] #story-actor, #story-stage[data-cell="20"] #story-actor { height: 39%; left: 19%; }
+#story-prop { position: absolute; z-index: 5; left: 34%; top: 46%; width: 15%; height: 22%; transform-origin: center; }
+#story-prop[data-prop="bush"] { left: 59%; top: auto; bottom: 1%; width: 33%; height: 45%; }
+.story-copy { padding: 14px 18px 4px; }
+#story-line { font: 800 clamp(1.12rem, 4.7vw, 1.45rem)/1.2 var(--display); }
+.story-outcome { gap: 8px; margin-top: 8px; min-height: 36px; font-weight: 700; }
+#story-symbol { height: 31px; min-width: 31px; padding: 0 4px; font-size: 1.1rem; }
+#story-place img { height: 36px; width: 38px; display: block; object-fit: contain; }
+.story-controls { gap: 6px; padding: 8px 14px 15px; }
+.story-controls button {
+  justify-content: center; gap: 5px; min-height: 42px; border-radius: 9px;
+  padding: 6px 10px; font-weight: 700;
+}
+.story-controls button:not(.primary) { border: 1px solid #c9bc9f; font-size: .82rem; }
+#story-next { margin-left: auto; flex: 1; }
+@media (max-width: 390px) {
+  .story-controls { gap: 4px; padding-inline: 9px; }
+  .story-controls button { padding: 5px 7px; }
+}
+@media (max-height: 550px) {
+  #story-stage { height: 30dvh; }
+  .story-head, .story-copy, .story-controls { padding-block: 6px; }
+}

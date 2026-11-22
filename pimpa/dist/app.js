@@ -3,7 +3,7 @@
   const {
     characters,
     cells,
-    layout,
+    planMove,
     finish,
     newGame,
     valid,
@@ -13,6 +13,7 @@
   } = PimpaGame;
   const $ = (id) => document.getElementById(id);
   const icons = {
+    play: '<path d="m7 4 12 8-12 8Z" fill="currentColor" stroke="none"/>',
     perspective: '<path d="m3 8 9-5 9 5-9 5-9-5Zm0 0v8l9 5 9-5V8m-9 5v8"/>',
     plus: '<path d="M4 12h16M12 4v16"/>',
     minus: '<path d="M4 12h16"/>',
@@ -420,6 +421,75 @@
     } while (bytes[0] >= 252);
     return (bytes[0] % 6) + 1;
   }
+  function checkpoint(stage) {
+    game.journey = stage;
+    save();
+  }
+  async function showLanding(player, n) {
+    table.highlight(n);
+    $("current-position").innerHTML = icon("flag");
+    $("current-position").append(document.createTextNode(location(n)));
+    $("dice-caption").textContent = cells[n].name;
+    await PimpaStories.show({
+      cell: cells[n], player, anchor: table.screenPoint(n), icon,
+      soundEnabled: () => sound, toggleSound,
+    });
+  }
+  async function travel(player, landed, target) {
+    const onFoot = PimpaStories.travelsOnFoot(landed);
+    const direction = Math.sign(target - landed);
+    const steps = onFoot
+      ? Array.from({ length: Math.abs(target - landed) }, (_, i) => landed + (i + 1) * direction)
+      : [target];
+    table.revealPath([landed, ...steps]);
+    table.highlight(target);
+    $("dice-caption").textContent = `${player.name} va al ${target}!`;
+    if (onFoot) {
+      for (const n of steps) {
+        await table.hop(player.id, n, reduced() ? 0 : 230);
+        chirp([[290 + n * 8, 0, .07]]);
+      }
+    } else {
+      chirp([[390, 0, .13], [550, .12, .18], [720, .28, .24]]);
+      await table.hop(player.id, target, reduced() ? 0 : 1350, true);
+    }
+    await pause(reduced() ? 0 : 420);
+  }
+  async function playJourney() {
+    const player = game.players[game.active];
+    const {path, landed, target} = planMove(game);
+    if (!game.journey) checkpoint("walk");
+    if (game.journey === "walk") {
+      table.revealPath([player.position, ...path]);
+      $("dice-caption").textContent = `${player.name} in cammino…`;
+      $("dice-hint").textContent = "Conta le caselle insieme alla pedina.";
+      for (const step of path) {
+        table.highlight(step);
+        $("current-position").innerHTML = icon("footprint");
+        $("current-position").append(document.createTextNode(location(step)));
+        chirp([[260 + step * 9, 0, .07]]);
+        await table.hop(player.id, step, reduced() ? 0 : 330);
+      }
+      checkpoint("landed");
+    } else {
+      const at = game.journey === "target" ? target : landed;
+      table.revealPath([at]);
+      await table.hop(player.id, at, 0);
+    }
+    if (game.journey === "landed") {
+      await showLanding(player, landed);
+      if (target !== landed) checkpoint("travel");
+    }
+    if (game.journey === "travel") {
+      await travel(player, landed, target);
+      checkpoint("target");
+    }
+    if (game.journey === "target") await showLanding(player, target);
+    // The turn changes only after every landing, including a chained effect.
+    move(game);
+    save();
+    render();
+  }
   // Buttons and future input adapters (e.g. gestures) use the same two commands.
   async function command(action) {
     if (busy || modal.open || !table || document.hidden) return false;
@@ -442,30 +512,7 @@
         render();
         announce(`È uscito il ${value}. Ora muovi la pedina.`);
       } else {
-        const player = game.players[game.active];
-        const result = move(game);
-        save();
-        $("dice-caption").textContent = `${player.name} in cammino…`;
-        $("dice-hint").textContent = "Conta le caselle insieme alla pedina.";
-        for (const step of result.path) {
-          $("current-position").innerHTML = icon("footprint");
-          $("current-position").append(document.createTextNode(location(step)));
-          chirp([[260 + step * 9, 0, 0.07]]);
-          await table.hop(player.id, step, reduced() ? 0 : 300);
-        }
-        if (result.target !== result.landed) {
-          $("dice-caption").textContent = cells[result.landed].name;
-          $("dice-hint").textContent = cells[result.landed].text;
-          announce(cells[result.landed].text);
-          await pause(reduced() ? 0 : 900);
-          await table.hop(player.id, result.target, reduced() ? 0 : 600);
-          chirp([
-            [390, 0, 0.1],
-            [result.target > result.landed ? 580 : 260, 0.12, 0.15],
-          ]);
-          await pause(reduced() ? 0 : 360);
-        }
-        render();
+        await playJourney();
         announce(
           game.notice +
             (game.phase === "won"
@@ -493,12 +540,15 @@
   $("rules-button").onclick = showRules;
   $("new-game").onclick = () => setup(true);
   $("edit-players").onclick = () => setup(game.phase === "won");
-  $("sound-button").onclick = () => {
+  function toggleSound() {
     sound = !sound;
     try {
       localStorage.setItem("pimpa.suono", sound ? "1" : "0");
     } catch {}
     renderSound();
+  }
+  $("sound-button").onclick = () => {
+    toggleSound();
     if (sound)
       chirp([
         [440, 0, 0.1],
@@ -576,6 +626,13 @@
     table.setDie(game.die || 4);
     render();
     if (game.phase === "won") showVictory();
+    if (game.journey) {
+      if (document.hidden) {
+        document.addEventListener("visibilitychange", () => command("move"), {once: true});
+      } else {
+        command("move");
+      }
+    }
   }
   start();
 })();

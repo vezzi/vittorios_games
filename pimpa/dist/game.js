@@ -180,6 +180,7 @@
     )
       return false;
     return (
+      (game.journey === undefined || validJourney(game)) &&
       (game.phase !== "move" || game.die !== null) &&
       (game.phase === "won"
         ? game.players[game.active].position === finish
@@ -198,7 +199,7 @@
     game.phase = "move";
     return true;
   }
-  function move(game) {
+  function planMove(game) {
     if (game.phase !== "move") return null;
     const player = game.players[game.active];
     const start = player.position;
@@ -209,7 +210,22 @@
     );
     const cell = cells[landed];
     const target = typeof cell.effect === "number" ? cell.effect : landed;
+    return { path, landed, target };
+  }
+  function validJourney(game) {
+    const plan = planMove(game);
+    if (!plan) return false;
+    if (game.journey === "walk" || game.journey === "landed") return true;
+    return (game.journey === "travel" || game.journey === "target") && plan.landed !== plan.target;
+  }
+  function move(game) {
+    const plan = planMove(game);
+    if (!plan) return null;
+    const { landed, target } = plan;
+    const player = game.players[game.active];
+    const cell = cells[landed];
     const effect = cells[target].effect;
+    delete game.journey;
     player.position = target;
     game.turns++;
     const messages = [
@@ -233,7 +249,7 @@
       }
     }
     game.notice = messages.join(" ");
-    return { path, landed, target };
+    return plan;
   }
   function editPlayers(game, roster) {
     if (game.phase === "won") return newGame(roster);
@@ -246,6 +262,7 @@
     game.players = next;
     game.active = Math.max(index, 0);
     if (index === -1) {
+      delete game.journey;
       game.phase = "roll";
       game.die = null;
       while (next[game.active].skip) {
@@ -264,6 +281,7 @@
     valid,
     roll,
     move,
+    planMove,
     editPlayers,
   };
 })();

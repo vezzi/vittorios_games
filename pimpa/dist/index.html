@@ -18,6 +18,7 @@
     <script defer src="pawn3d.js"></script>
     <script defer src="table3d.js"></script>
     <script defer src="table-compatible.js"></script>
+    <script defer src="stories.js"></script>
     <script defer src="app.js"></script>
   </head>
   <body>
@@ -139,6 +140,27 @@
       aria-atomic="true"
     ></div>
     <dialog id="modal"><div class="dialog-body" id="modal-body"></div></dialog>
+    <dialog id="arrival" aria-labelledby="story-title" aria-describedby="story-line story-cue">
+      <header class="story-head">
+        <span class="story-token" aria-label="Casella"><b id="story-number"></b></span>
+        <div><span id="story-player"></span><h2 id="story-title"></h2></div>
+        <button id="story-sound" class="story-audio" type="button" title="Voce italiana"></button>
+      </header>
+      <div id="story-stage" aria-hidden="true">
+        <div id="story-actor" class="puppet"></div>
+        <div id="story-pawn" class="puppet"></div>
+        <div id="story-prop"></div>
+      </div>
+      <div class="story-copy"><p id="story-line"></p>
+        <div class="story-outcome"><span id="story-symbol"></span><span id="story-cue"></span><span id="story-place"></span></div>
+      </div>
+      <footer class="story-controls">
+        <button id="story-replay" type="button"><i data-icon="restart"></i>Rivedi</button>
+        <button id="story-pause" type="button"></button>
+        <button id="story-next" type="button" class="primary" autofocus></button>
+      </footer>
+      <audio id="story-voice" preload="auto"></audio>
+    </dialog>
     <noscript>Per giocare, attiva JavaScript nel browser.</noscript>
   </body>
 </html>

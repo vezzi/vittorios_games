@@ -341,7 +341,7 @@
       }
       dirty = true;
     }
-    function hop(id, n, duration) {
+    function hop(id, n, duration, flight = false) {
       const { piece, shadow } = pieces.get(id),
         from = piece.position.clone(),
         to = occupiedPoint(id, n);
@@ -356,6 +356,7 @@
         animation = {
           start: performance.now(),
           duration,
+          lift: flight ? 1.05 : 0.23,
           from,
           to,
           piece,
@@ -611,7 +612,7 @@
         a.piece.position.lerpVectors(a.from, a.to, smooth);
         a.shadow.position.copy(a.piece.position);
         a.shadow.position.y = a.to.y + 0.004;
-        a.piece.position.y += Math.sin(Math.PI * t) * 0.23;
+        a.piece.position.y += Math.sin(Math.PI * t) * a.lift;
         a.piece.rotation.z = Math.sin(2 * Math.PI * t) * 0.06;
         if (t >= 1) {
           animation = null;

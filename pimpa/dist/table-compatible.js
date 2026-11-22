@@ -254,12 +254,16 @@
           ).finished;
         setDie(value);
       },
-      async hop(id, n, duration) {
+      async hop(id, n, duration, flight = false) {
         const spot = pieces.get(id);
         spot.style.transitionDuration = duration + "ms";
         position(spot, spotAt(id, n));
-        if (duration)
-          await new Promise((resolve) => setTimeout(resolve, duration));
+        if (duration) {
+          const upright = "rotateX(var(--stand-angle))";
+          const frame = height => ({ transform: `translate(-50%, -100%) translateZ(${height}px) ${upright}` });
+          await spot.animate([frame(0), frame(flight ? 95 : 18), frame(0)],
+            { duration, easing: "ease-in-out" }).finished;
+        }
       },
     };
   }
