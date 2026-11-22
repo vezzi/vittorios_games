@@ -20,20 +20,21 @@
       zoom = 1;
     host.replaceChildren(surface);
     surface.append(board);
-    PimpaGame.layout.forEach((row, r) =>
-      row.forEach((n, c) => {
-        if (n === null) return;
+    PimpaBoard.tiles.forEach((tile, n) => {
         const btn = node("button", "compat-cell");
-        coordinates.set(n, [(c + 0.5) * 100, (r + 0.5) * 100]);
-        Object.assign(btn.style, { left: c * 100 + "px", top: r * 100 + "px" });
+        const [u, v] = PimpaBoard.center(n);
+        coordinates.set(n, [u * 500, v * 700]);
+        Object.assign(btn.style, {
+          left: tile.x / 2 + "px", top: tile.y / 2 + "px",
+          width: PimpaBoard.cellWidth / 2 + "px", height: PimpaBoard.cellHeight / 2 + "px",
+        });
         btn.setAttribute(
           "aria-label",
           n === 0 ? "Partenza" : n === 31 ? "Arrivo" : "Casella " + n,
         );
         btn.onclick = () => actions.onCell(n);
         board.append(btn);
-      }),
-    );
+    });
     for (const id of ids) {
       const spot = node("button", "compat-pawn"),
         img = node("img", "");

@@ -67,8 +67,8 @@
     img.draggable = false;
     return img;
   };
-  const art = (cell) => `assets/board/${cell.n}.png`;
-  const hasArt = (n) => n !== 0 && !cells[n].name.startsWith("Casella ");
+  const art = (cell) => PimpaBoard.image(PimpaBoard.art[cell.n]);
+  const hasArt = (n) => Boolean(PimpaBoard.art[n]);
   const location = (n) =>
     n === 0 ? "Alla partenza" : n === finish ? "All’arrivo" : `Casella ${n}`;
   const effectIcon = (cell) =>

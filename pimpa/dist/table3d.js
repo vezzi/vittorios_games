@@ -5,14 +5,7 @@
     boardY = 0.135;
   const initialBearing = 0.29,
     initialElevation = 0.9;
-  const rows = PimpaGame.layout;
   const ids = Object.keys(PimpaGame.characters);
-  const grid = new Map();
-  rows.forEach((row, r) =>
-    row.forEach((n, c) => {
-      if (n !== null) grid.set(n, [r, c]);
-    }),
-  );
   const reducedMotion = () =>
     matchMedia("(prefers-reduced-motion: reduce)").matches;
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
@@ -64,7 +57,7 @@
         });
     const [wood, print, ...faces] = await Promise.all([
       fileTexture("assets/table-wood.jpg"),
-      fileTexture("assets/tabellone-originale.webp"),
+      fileTexture("assets/illustrazioni-tabellone.webp"),
       ...ids.map((id) => fileTexture(`assets/characters/${id}.png`)),
     ]);
     const hemi = new T.HemisphereLight(0xfff5e4, 0xb48c64, 1.25);
@@ -263,12 +256,8 @@
       drawDieUntil = 0,
       lastTick = 0;
     function cellPoint(n) {
-      const [r, c] = grid.get(n);
-      return new T.Vector3(
-        ((c - 2) * W) / 5,
-        boardY + 0.004,
-        ((r - 3) * D) / 7,
-      );
+      const [u, v] = PimpaBoard.center(n);
+      return new T.Vector3((u - 0.5) * W, boardY + 0.004, (v - 0.5) * D);
     }
     function occupiedPoint(id, n) {
       const point = cellPoint(n);
@@ -505,9 +494,8 @@
         return;
       }
       if (object === paper) {
-        const col = clamp(Math.floor((hit.point.x / W + 0.5) * 5), 0, 4),
-          row = clamp(Math.floor((hit.point.z / D + 0.5) * 7), 0, 6);
-        if (rows[row][col] !== null) onCell(rows[row][col]);
+        const n = PimpaBoard.cellAt(hit.point.x / W + 0.5, hit.point.z / D + 0.5);
+        if (n !== null) onCell(n);
       }
     }
     canvas.addEventListener("pointerup", (e) => {
