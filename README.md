@@ -4,7 +4,7 @@ Giochi per Vittorio.
 
 ## Il gioco dell’oca di Pimpa
 
-Un gioco da tavolo in 3D per 1–4 persone sullo stesso schermo. Il tabellone riproduce quello delle foto di famiglia. Il codice del gioco, il motore 3D, i caratteri e le immagini sono tutti nella cartella [pimpa/dist](pimpa/dist). Puoi giocare sul Mac anche senza connessione o account ChatGPT.
+Un gioco da tavolo in 3D per 1–4 persone sullo stesso schermo. La plancia illustrata segue il percorso del gioco di famiglia. Ogni arrivo apre una breve scena con la pedina di chi gioca. Il codice del gioco, il motore 3D, i caratteri e le immagini sono tutti nella cartella [pimpa/dist](pimpa/dist). Puoi giocare sul Mac anche senza connessione o account ChatGPT.
 
 ### Avvio con un doppio clic
 
@@ -26,7 +26,8 @@ La partita si salva nel browser. Per riprenderla, usa lo stesso browser e lo ste
 
 1. Premi **Modifica** per scegliere le pedine e i nomi dei giocatori.
 2. Quando tocca a te, premi **Lancia il dado** o fai clic sul dado rosso.
-3. Conta i puntini, poi premi **Muovi** o fai clic sulla tua pedina. Il gioco applica gli effetti delle caselle speciali.
-4. Raggiungi la maga per vincere. Puoi toccare qualsiasi casella per leggerne il testo o trascinare il tavolo per cambiare prospettiva.
+3. Conta i puntini e premi **Muovi**, oppure tocca la tua pedina. Alla fine dei passi si apre la casella. L’altoparlante attiva la voce italiana, disponibile anche offline. Con **Pausa** puoi fermare la scena e con **Rivedi** puoi guardarla di nuovo.
+4. Segui quello che fa il tuo personaggio. Sulla 29 la strega gli porge una caramella, poi la pedina vola fino alla 5. Il gioco prosegue da solo. Puoi anche premere **Vola al 5** per partire subito. Vince chi raggiunge la maga.
+5. **Trova pedina** avvicina la visuale a chi è di turno. In **Esplora le caselle** puoi sfogliare il percorso e premere **Guarda sul tavolo** per ritrovare una casella sulla plancia. Il pulsante **Ripristina la prospettiva** torna alla vista d’insieme.
 
 ![Il tabellone di Pimpa con le pedine e il dado sul tavolo 3D](pimpa/anteprima.jpg)

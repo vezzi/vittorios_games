@@ -435,25 +435,64 @@
       soundEnabled: () => sound, toggleSound,
     });
   }
+  function traceRoute(numbers, flying) {
+    const host = $("scene");
+    const overlay = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    overlay.classList.add("travel-route");
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = '<path class="route-shadow"/><path class="route-dots"/><g><path d="M0 4 8 -14" stroke="#225a52" stroke-width="3"/><circle cx="11" cy="-24" r="15"/><text x="11" y="-24"></text></g>';
+    const [shadow, dots, pin] = overlay.children;
+    pin.lastElementChild.textContent = numbers.at(-1);
+    host.append(overlay);
+    let frame;
+    function draw() {
+      const rect = host.getBoundingClientRect();
+      const points = numbers.map(n => {
+        const point = table.screenPoint(n);
+        return [point.x - rect.left, point.y - rect.top];
+      });
+      const [sx, sy] = points[0];
+      const [ex, ey] = points.at(-1);
+      const arc = Math.min(95, Math.hypot(ex - sx, ey - sy) * .27);
+      const line = flying
+        ? `M${sx},${sy} Q${(sx + ex) / 2},${(sy + ey) / 2 - arc} ${ex},${ey}`
+        : "M" + points.map(point => point.join(",")).join(" L");
+      shadow.setAttribute("d", line);
+      dots.setAttribute("d", line);
+      pin.setAttribute("transform", `translate(${ex} ${ey})`);
+      frame = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => {
+      cancelAnimationFrame(frame);
+      overlay.remove();
+    };
+  }
   async function travel(player, landed, target) {
     const onFoot = PimpaStories.travelsOnFoot(landed);
     const direction = Math.sign(target - landed);
     const steps = onFoot
       ? Array.from({ length: Math.abs(target - landed) }, (_, i) => landed + (i + 1) * direction)
       : [target];
-    table.revealPath([landed, ...steps]);
+    const route = [landed, ...steps];
+    table.revealPath(route);
     table.highlight(target);
+    const clearRoute = traceRoute(route, !onFoot);
     $("dice-caption").textContent = `${player.name} va al ${target}!`;
-    if (onFoot) {
-      for (const n of steps) {
-        await table.hop(player.id, n, reduced() ? 0 : 230);
-        chirp([[290 + n * 8, 0, .07]]);
+    try {
+      if (onFoot) {
+        for (const n of steps) {
+          await table.hop(player.id, n, reduced() ? 0 : 230);
+          chirp([[290 + n * 8, 0, .07]]);
+        }
+      } else {
+        chirp([[390, 0, .13], [550, .12, .18], [720, .28, .24]]);
+        await table.hop(player.id, target, reduced() ? 0 : 1350, true);
       }
-    } else {
-      chirp([[390, 0, .13], [550, .12, .18], [720, .28, .24]]);
-      await table.hop(player.id, target, reduced() ? 0 : 1350, true);
+      await pause(460);
+    } finally {
+      clearRoute();
     }
-    await pause(reduced() ? 0 : 420);
   }
   async function playJourney() {
     const player = game.players[game.active];
