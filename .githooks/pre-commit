@@ -1,0 +1,9 @@
+#!/bin/sh
+# Scan the staged snapshot, including generated assets. Print only filenames.
+export LC_ALL=C
+git grep --cached --text --files-with-matches --extended-regexp -e 'AIza[A-Za-z0-9_-]{35}' --
+case $? in
+    0) echo 'Commit blocked. Review the staged files above for a possible Google API key.' >&2; exit 1 ;;
+    1) exit 0 ;;
+    *) echo 'Could not scan the staged files for Google API keys.' >&2; exit 1 ;;
+esac
