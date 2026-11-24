@@ -30,15 +30,19 @@ La partita si salva nel browser. Per riprenderla, usa lo stesso browser e lo ste
 4. Segui quello che fa il tuo personaggio. Sulla 29 la strega gli porge una caramella, poi la pedina vola fino alla 5. Il gioco prosegue da solo. Puoi anche premere **Vola al 5** per partire subito. Vince chi raggiunge la maga.
 5. **Trova pedina** avvicina la visuale a chi è di turno. In **Esplora le caselle** puoi sfogliare il percorso e premere **Guarda sul tavolo** per ritrovare una casella sulla plancia. Il pulsante **Ripristina la prospettiva** torna alla vista d’insieme.
 
+### Comandi vocali
+
+Quando il gioco aspetta un lancio o uno spostamento, tocca **Parla** e pronuncia «lancia il dado» o «muovi», secondo il suggerimento. Il microfono si apre con il tocco e l’ascolto termina alla prima frase riconosciuta o dopo quattro secondi. Tocca di nuovo **Parla** per un altro comando.
+
+Al primo utilizzo il browser può chiedere il permesso di usare il microfono. Se scadono i quattro secondi mentre concedi il permesso, tocca di nuovo **Parla**. Se il riconoscimento italiano sul dispositivo è disponibile, il gioco lo preferisce. Altrimenti il servizio del browser può elaborare la voce online. Se **Parla** non è disponibile o il microfono è bloccato, puoi giocare con i pulsanti, il dado e la pedina. Il gioco normale funziona anche offline.
+
 [Guarda il percorso dall’alto](pimpa/dist/assets/illustrazioni-tabellone.webp)
 
 ![Il percorso a spirale di Pimpa con le pedine e il dado sul tavolo 3D](pimpa/anteprima.jpg)
 
 ## Sviluppo
 
-**Parla** è in progettazione. Il piano prevede due comandi vocali, «lancia il dado» e «muovi», attivabili dal pulsante **Parla** per un massimo di quattro secondi. L’altoparlante del gioco riproduce già la narrazione italiana delle scene.
-
-- [Piano Parla](docs/plans/PARLA.md) con obiettivi, attività, deliverable e criteri di accettazione.
-- [Architettura](ARCHITECTURE.MD) con il funzionamento attuale del gioco e il punto d’integrazione di Parla.
+- [Piano Parla](docs/plans/PARLA.md) con obiettivi, criteri di accettazione e risultati delle verifiche.
+- [Architettura](ARCHITECTURE.MD) con il funzionamento del gioco e l’integrazione di Parla.
 - [Decisioni di progetto](DECISION.MD) con le motivazioni delle scelte su avvio, regole e riconoscimento vocale.
 - [Guida ai test](docs/TESTING.md) con i comandi da eseguire e le verifiche da fare sul Mac.

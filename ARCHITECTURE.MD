@@ -12,6 +12,7 @@ Il gioco dell’oca di Pimpa è una pagina statica per 1–4 giocatori sullo ste
 | [`board.js`](pimpa/dist/board.js) | Deriva la geometria dalla disposizione delle caselle in `game.js`, identifica la casella toccata e associa le illustrazioni. |
 | [`table3d.js`](pimpa/dist/table3d.js) e [`table-compatible.js`](pimpa/dist/table-compatible.js) | Presentano lo stesso tavolo con WebGL e con una vista compatibile se WebGL fallisce. Usano le azioni fornite da `app.js` per clic su dado, pedina e caselle. |
 | [`stories.js`](pimpa/dist/stories.js) | Mostra le scene di arrivo, con animazioni, pausa, replay e audio italiano da [`assets/voce`](pimpa/dist/assets/voce). |
+| [`voice.js`](pimpa/dist/voice.js) | Gestisce una singola sessione di riconoscimento italiano del browser e associa le due frasi alle azioni di turno. |
 | [`render_board.py`](pimpa/tools/render_board.py) | Rigenera la stampa della plancia e le texture WebGL usate all’apertura dal Finder. È uno strumento di sviluppo. |
 
 ## Turni e salvataggi
@@ -22,8 +23,10 @@ Il gioco dell’oca di Pimpa è una pagina statica per 1–4 giocatori sullo ste
 
 `localStorage` conserva la partita in `pimpa.oca.v1` e l’impostazione audio in `pimpa.suono`. La partita ripresa dipende dal browser e dall’indirizzo usati per aprire il gioco. I salvataggi precedenti all’introduzione di `journey` sono ancora validi.
 
-## Punto d’integrazione previsto per Parla
+## Comandi vocali
 
-L’integrazione parte dal pannello del turno. Il riconoscimento del browser restituisce una frase e il componente vocale la traduce in `roll` o `move`. `app.js` verifica che la sessione appartenga ancora alla fase corrente e passa l’azione a `command()`. Le scene di arrivo possono già parlare con l’audio italiano incluso nel gioco. L’ascolto del microfono sarà una funzione del pannello del turno con un proprio pulsante e indicatore.
+`app.js` abilita **Parla** quando il tavolo è pronto e attende un lancio o uno spostamento. Il pulsante avvia `voice.js` nella fase corrente. `voice.js` associa la prima frase finale a `roll` o `move` e chiude la sessione prima di inviare l’azione. `app.js` ricontrolla che la fase e i controlli permettano di eseguirla e la passa a `command()`.
 
-Il [piano Parla](docs/plans/PARLA.md) definisce le condizioni di avvio, chiusura e passaggio alla funzione `command()`. La [guida ai test](docs/TESTING.md) riporta la copertura esistente.
+Lo stato vocale vive in memoria per la durata del tentativo. `voice.js` imposta una scadenza di quattro secondi dall’attivazione e scarta i risultati che arrivano tardi. `app.js` annulla l’ascolto quando si avvia un’azione manuale, si apre una finestra di gioco o si lascia la scheda. La narrazione usa il proprio audio incluso nel gioco durante le scene.
+
+Il [piano Parla](docs/plans/PARLA.md) riporta i criteri di accettazione. La [guida ai test](docs/TESTING.md) descrive la copertura automatica e le prove sul Mac.

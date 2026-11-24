@@ -8,9 +8,9 @@ Esegui questo comando dalla cartella principale con Node.js.
 node --test pimpa/tests/*.test.cjs
 ```
 
-[`journey.test.cjs`](../pimpa/tests/journey.test.cjs) controlla la coerenza tra percorso, selezione e scene, la presenza degli asset, i collegamenti tra caselle, la ripresa del viaggio in ogni fase e gli effetti speciali. I test funzionano senza browser o server locale. I test per Parla andranno nella stessa cartella e saranno inclusi dallo stesso comando.
+[`journey.test.cjs`](../pimpa/tests/journey.test.cjs) controlla la coerenza tra percorso, selezione e scene, la presenza degli asset, i collegamenti tra caselle, la ripresa del viaggio in ogni fase e gli effetti speciali. Lo stesso comando esegue [`voice.test.cjs`](../pimpa/tests/voice.test.cjs). Entrambi funzionano senza browser o server locale.
 
-## Test automatici previsti per Parla
+## Test automatici di Parla
 
 Il riconoscitore finto permette di inviare gli eventi in ordine controllato e di contare `start()`, `abort()` e le azioni di gioco. Con un orologio controllabile si verificano questi casi senza aspettare quattro secondi reali.
 
@@ -25,7 +25,7 @@ Per la verifica sul browser usa l’avvio locale descritto nel [README](../READM
 
 Per la regressione del gioco, apri anche `pimpa/dist/index.html` dal Finder. Lancia dal pulsante e dal dado, muovi dal pulsante e dalla pedina e verifica che si apra la scena. Prova con l’audio italiano, ricarica una partita durante un viaggio e verifica che il turno venga completato una volta sola. Dal Finder prova anche senza connessione.
 
-## Prove Parla previste dopo l’implementazione
+## Prove di Parla con il microfono
 
 Usa il microfono effettivo del Mac e osserva l’indicatore del browser o di macOS oltre al messaggio nella pagina.
 

@@ -401,6 +401,7 @@
           }));
         if (!roster.length) return;
         game = restart ? newGame(roster) : editPlayers(game, roster);
+        if (voice.supported) voiceStatus.textContent = "";
         save();
         render();
         modal.close();

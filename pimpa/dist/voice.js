@@ -9,7 +9,6 @@
       .toLowerCase()
       .trim()
       .replace(/[\p{P}\s]+$/u, "")
-      .trim()
       .replace(/\s+/g, " ");
   }
 
@@ -17,7 +16,7 @@
     try {
       recognition.abort();
     } catch {
-      // Some implementations reject abort after the recognition has ended.
+      // A browser-side failure to abort must not block the game controls.
     }
   }
 
