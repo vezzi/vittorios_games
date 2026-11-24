@@ -15,3 +15,7 @@
 Il riconoscimento italiano sul dispositivo ha la precedenza quando il browser lo dichiara disponibile. Altrimenti si usa il riconoscimento integrato del browser, che può elaborare l’audio online. Il gioco comunica questa possibilità e usa il normale permesso del browser. La funzione opera senza OpenAI, chiavi API o servizi aggiuntivi gestiti dal progetto. [Web Speech API](https://webaudio.github.io/web-speech-api/)
 
 I casi di errore, i tempi esatti e le prove sul Mac sono nel [piano Parla](docs/plans/PARLA.md).
+
+## La narrazione usa registrazioni pronte da riprodurre
+
+**In uso.** Le scene riproducono i 31 MP3 inclusi in [`assets/voce`](pimpa/dist/assets/voce), anche offline. Ogni traccia contiene la battuta e l’indicazione di gioco di `PimpaStories.storyFor()`. Per la nuova voce italiana abbiamo generato i file in locale con Kokoro v1.0, voce Sara (`if_sara`), a velocità `0.92`, e li abbiamo normalizzati allo stesso livello di ascolto. [Kokoro-82M e voci](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md)
