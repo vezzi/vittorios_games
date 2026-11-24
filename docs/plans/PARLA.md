@@ -36,4 +36,5 @@ Una singola attivazione è legata alla fase del gioco in quel momento. Il gioco 
 
 ## Evidenze
 
-Sul codice di partenza `node --test pimpa/tests/*.test.cjs` passa con 4 test. I test vocali e le prove con il microfono sono previsti per l’implementazione. Aggiorna questa sezione con il numero di test superati, browser e versione, modo di apertura, modalità di riconoscimento e risultati delle prove manuali della [guida ai test](../TESTING.md). Se il browser può riaprire il microfono dopo la scadenza, registra il caso come non superato per quella configurazione.
+- **Verifica iniziale.** La suite di partenza passa con 4 test. Su macOS 15.7.2, Chrome 158.0.8127.38 ha caricato il gioco dal Finder ed esposto la Web Speech API su `127.0.0.1`. Per `it-IT` il browser ha riportato `downloadable` per il riconoscimento sul dispositivo. Con un microfono simulato, la sessione di prova ha acquisito audio dopo il clic e si è chiusa in risposta ad `abort()` a quattro secondi.
+- **Primo permesso.** In Chrome senza interfaccia, senza permesso precaricato, la prova termina subito con `not-allowed`. Impostare il permesso dopo la scadenza non ha riattivato la sessione. La finestra di permesso con microfono fisico resta da provare secondo la [guida ai test](../TESTING.md).
