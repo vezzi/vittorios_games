@@ -33,3 +33,12 @@ La partita si salva nel browser. Per riprenderla, usa lo stesso browser e lo ste
 [Guarda il percorso dall’alto](pimpa/dist/assets/illustrazioni-tabellone.webp)
 
 ![Il percorso a spirale di Pimpa con le pedine e il dado sul tavolo 3D](pimpa/anteprima.jpg)
+
+## Sviluppo
+
+**Parla** è in progettazione. Il piano prevede due comandi vocali, «lancia il dado» e «muovi», attivabili dal pulsante **Parla** per un massimo di quattro secondi. L’altoparlante del gioco riproduce già la narrazione italiana delle scene.
+
+- [Piano Parla](docs/plans/PARLA.md) con obiettivi, attività, deliverable e criteri di accettazione.
+- [Architettura](ARCHITECTURE.MD) con il funzionamento attuale del gioco e il punto d’integrazione di Parla.
+- [Decisioni di progetto](DECISION.MD) con le motivazioni delle scelte su avvio, regole e riconoscimento vocale.
+- [Guida ai test](docs/TESTING.md) con i comandi da eseguire e le verifiche da fare sul Mac.
