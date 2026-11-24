@@ -679,9 +679,43 @@ body {
 .primary:disabled {
   opacity: 0.72;
 }
-.turn-controls .primary {
+.turn-actions {
+  display: flex;
+  gap: 8px;
   margin-top: 13px;
-  width: 100%;
+}
+.turn-actions .primary {
+  flex: 1;
+  min-width: 0;
+}
+.voice-button {
+  min-height: 44px;
+  padding: 0 11px;
+  border: 1px solid #778b75;
+  border-radius: 9px;
+  background: #edf2e4;
+  color: #254d41;
+}
+.voice-button:not(:disabled):not([aria-disabled="true"]):hover {
+  background: #ddebd6;
+}
+.voice-button:disabled {
+  opacity: 0.62;
+}
+.voice-button[aria-disabled="true"] {
+  background: #254d41;
+  color: #fffdf7;
+  cursor: default;
+}
+.voice-status,
+.voice-note {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.25;
+  margin-top: 6px;
+}
+.voice-status:empty {
+  margin: 0;
 }
 .players-panel {
   padding: 12px 14px 14px;
@@ -1022,10 +1056,18 @@ body {
   .dice-caption p {
     display: none;
   }
+  .turn-actions {
+    gap: 5px;
+    margin-top: 5px;
+  }
   .turn-controls .primary {
     min-height: 33px;
     font-size: 0.84rem;
-    margin-top: 5px;
+  }
+  .voice-button {
+    min-height: 40px;
+    padding: 0 7px;
+    font-size: 0.84rem;
   }
   .players-panel {
     padding: 8px 10px 10px;

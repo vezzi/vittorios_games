@@ -19,6 +19,7 @@
     <script defer src="table3d.js"></script>
     <script defer src="table-compatible.js"></script>
     <script defer src="stories.js"></script>
+    <script defer src="voice.js"></script>
     <script defer src="app.js"></script>
   </head>
   <body>
@@ -103,9 +104,16 @@
               <h3 id="dice-caption">Il dado è pronto!</h3>
               <p id="dice-hint">Lancialo sul tavolo per iniziare.</p>
             </div>
-            <button id="play-button" class="primary">
-              <i data-icon="die"></i><span>Lancia il dado</span>
-            </button>
+            <div class="turn-actions">
+              <button id="play-button" class="primary">
+                <i data-icon="die"></i><span>Lancia il dado</span>
+              </button>
+              <button id="voice-button" class="voice-button" type="button" disabled>
+                Parla
+              </button>
+            </div>
+            <p id="voice-status" class="voice-status" role="status"></p>
+            <p id="voice-note" class="voice-note" hidden>Il browser può elaborare la voce online.</p>
           </div>
         </section>
         <section class="players-panel panel" aria-labelledby="players-title">
