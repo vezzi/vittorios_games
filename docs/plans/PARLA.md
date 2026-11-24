@@ -1,6 +1,6 @@
 # Piano Parla
 
-**Implementato.** Verifica con microfono fisico da completare. Riferimento di partenza `b9f624e`.
+**Implementato.** Entrambi i comandi verificati con il microfono del Mac. Riferimento di partenza `b9f624e`.
 
 ## Obiettivo
 
@@ -33,11 +33,14 @@ Una singola attivazione è legata alla fase del gioco in quel momento. Il gioco 
 - [x] La sessione è ancora valida immediatamente prima di 4.000 ms e scade esattamente a 4.000 ms. Risultati al limite o oltre ed eventi di una sessione precedente non modificano la partita.
 - [x] Annullamento su azione manuale, finestra di gioco o cambio scheda verificato con eventi simulati. Un nuovo tentativo funziona dopo il termine di una sessione. Per permesso negato, API assente e servizio indisponibile la partita rimane giocabile.
 - [x] La suite completa passa. In Chrome su Mac si riprende un salvataggio. I controlli manuali e la narrazione funzionano anche con apertura da file e rete disattivata.
-- [ ] Con microfono fisico, pronunciare entrambe le frasi e verificare le azioni e l’indicatore del microfono, anche durante la narrazione e al cambio di scheda. Lasciare in attesa il primo permesso per oltre quattro secondi e confermare che il microfono resti chiuso. Registrare il comportamento con apertura da indirizzo locale e da Finder.
+- [x] Con il microfono del Mac e il gioco aperto da indirizzo locale, «lancia il dado» e «muovi» eseguono le azioni previste.
+- [x] In una prova dal vivo senza parlare, l’indicatore del microfono scompare dopo circa quattro secondi.
+- [ ] Con microfono fisico, verificare l’indicatore durante la narrazione e al cambio di scheda. Lasciare in attesa il primo permesso per oltre quattro secondi e confermare che il microfono resti chiuso. Registrare l’eventuale disponibilità della voce con apertura da Finder.
 
 ## Evidenze
 
-- **Verifica iniziale.** La suite di partenza passa con 4 test. Su macOS 15.7.2, Chrome 158.0.8127.38 ha caricato il gioco dal Finder ed esposto la Web Speech API su `127.0.0.1`. Per `it-IT` il browser ha riportato `downloadable` per il riconoscimento sul dispositivo. Con un microfono simulato, la sessione di prova ha acquisito audio dopo il clic e si è chiusa in risposta ad `abort()` a quattro secondi.
+- **Verifica iniziale.** La suite di partenza passa con 4 test. Su macOS 15.7.2, Chrome 158.0.8127.38 ha caricato il gioco con apertura via `file:` ed esposto la Web Speech API su `127.0.0.1`. Per `it-IT` il browser ha riportato `downloadable` per il riconoscimento sul dispositivo. Con un microfono simulato, la sessione di prova ha acquisito audio dopo il clic e si è chiusa in risposta ad `abort()` a quattro secondi.
 - **Primo permesso.** In Chrome senza interfaccia, senza permesso precaricato, la prova termina subito con `not-allowed`. Impostare il permesso dopo la scadenza non ha riattivato la sessione. La finestra di permesso con microfono fisico resta da provare secondo la [guida ai test](../TESTING.md).
 - **Suite finale.** `node --test pimpa/tests/*.test.cjs` passa con 13 test. In Chrome 158 su `127.0.0.1`, i risultati vocali simulati hanno verificato le due azioni, la tastiera, l’annullamento, la scadenza e il recupero di un viaggio salvato. Con apertura via `file:` e rete disattivata, partita e narrazione hanno funzionato con l’API vocale assente.
-- **Riconoscimento nativo.** In Chrome senza interfaccia e con audio italiano preregistrato inviato al microfono simulato, il browser ha aperto e chiuso l’acquisizione per entrambi i tentativi. Le trascrizioni non sono arrivate entro quattro secondi. Il riconoscimento dei due comandi con il microfono fisico resta da verificare.
+- **Riconoscimento nativo.** In Chrome senza interfaccia e con audio italiano preregistrato inviato al microfono simulato, il browser ha aperto e chiuso l’acquisizione per entrambi i tentativi. Le trascrizioni non sono arrivate entro quattro secondi.
+- **Prova dal vivo.** Con il gioco aperto da indirizzo locale, entrambi i comandi vocali hanno funzionato con il microfono del Mac. In una prova senza parlare, l’indicatore si è spento dopo circa quattro secondi.
