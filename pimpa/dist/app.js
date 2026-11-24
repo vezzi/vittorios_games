@@ -80,6 +80,10 @@
       : cell.effect;
   const modal = $("modal");
   const body = $("modal-body");
+  const arrival = $("arrival");
+  const voiceButton = $("voice-button");
+  const voiceNote = $("voice-note");
+  const voiceStatus = $("voice-status");
   let table;
   const saveKey = "pimpa.oca.v1";
   const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -90,6 +94,12 @@
 
   let audio;
   let busy = false;
+  const voice = PimpaVoice.create({
+    onStatus: showVoiceStatus,
+    onCommand: (action) => {
+      if (canSpeak()) command(action);
+    },
+  });
 
   try {
     const saved = JSON.parse(localStorage.getItem(saveKey));
@@ -130,6 +140,31 @@
     $("sound-button").setAttribute("aria-label", label);
     $("sound-button").title = label;
     $("sound-button").setAttribute("aria-pressed", String(sound));
+  }
+  function canSpeak() {
+    return (
+      table && !busy && !game.journey && !document.hidden &&
+      !modal.open && !arrival.open && Object.hasOwn(PimpaVoice.phrases, game.phase)
+    );
+  }
+  function renderVoice() {
+    voiceButton.disabled = !voice.supported || !canSpeak();
+    if (voice.active) voiceButton.setAttribute("aria-disabled", "true");
+    else voiceButton.removeAttribute("aria-disabled");
+  }
+  function showVoiceStatus(status) {
+    const phrase = PimpaVoice.phrases[game.phase];
+    voiceStatus.textContent = {
+      idle: "",
+      starting: "Attivazione del microfono…",
+      listening: `Ti ascolto… Di’ «${phrase}».`,
+      processing: "Sto capendo…",
+      empty: "Tocca Parla per riprovare.",
+      unrecognized: `Prova a dire «${phrase}».`,
+      denied: "Microfono bloccato. Puoi usare i pulsanti.",
+      unavailable: "Voce non disponibile. Puoi usare i pulsanti.",
+    }[status];
+    renderVoice();
   }
   function render() {
     const current = game.players[game.active];
@@ -207,6 +242,7 @@
     ].forEach((id) => {
       $(id).disabled = locked;
     });
+    renderVoice();
   }
   function modalHeading(title) {
     body.replaceChildren();
@@ -223,7 +259,9 @@
     modal.setAttribute("aria-labelledby", h.id);
   }
   const openModal = () => {
+    voice.cancel();
     if (!modal.open) modal.showModal();
+    renderVoice();
   };
   function modalButton(label, action, symbol) {
     const button = el("button", "primary");
@@ -535,6 +573,8 @@
     if (action !== game.phase || !["roll", "move"].includes(action))
       return false;
     busy = true;
+    voice.cancel();
+    if (voice.supported) voiceStatus.textContent = "";
     lockControls(true);
     try {
       if (action === "roll") {
@@ -576,6 +616,15 @@
   }
   $("play-button").onclick = () =>
     game.phase === "won" ? showVictory() : command(game.phase);
+  voiceButton.addEventListener("click", (event) => {
+    if (event.isTrusted && canSpeak()) voice.start(game.phase);
+  });
+  modal.addEventListener("close", renderVoice);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) voice.cancel();
+    renderVoice();
+  });
+  window.addEventListener("pagehide", () => voice.cancel());
   $("rules-button").onclick = showRules;
   $("new-game").onclick = () => setup(true);
   $("edit-players").onclick = () => setup(game.phase === "won");
@@ -635,6 +684,14 @@
     move: () => command("move"),
   });
   renderSound();
+  if (voice.supported) {
+    voiceNote.hidden = false;
+    voice.preferLocal().then((local) => {
+      voiceNote.hidden = local;
+    });
+  } else {
+    showVoiceStatus("unavailable");
+  }
   render();
   lockControls(true);
   const actions = {

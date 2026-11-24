@@ -1,13 +1,14 @@
 (() => {
   "use strict";
   const language = "it-IT";
+  const limit = 4000;
   const phrases = Object.freeze({ roll: "lancia il dado", move: "muovi" });
 
   function normalize(transcript) {
     return transcript
       .toLowerCase()
       .trim()
-      .replace(/[.!?…]+$/, "")
+      .replace(/[\p{P}\s]+$/u, "")
       .trim()
       .replace(/\s+/g, " ");
   }
@@ -44,14 +45,23 @@
     function finish(attempt, status, ended = false) {
       if (session !== attempt) return false;
       session = null;
+      browser.clearTimeout(attempt.timer);
       if (!ended) abort(attempt.recognition);
       onStatus(status);
       return true;
     }
 
+    function isLive(attempt) {
+      if (session !== attempt) return false;
+      if (browser.performance.now() < attempt.deadline) return true;
+      finish(attempt, "empty");
+      return false;
+    }
+
     function start(action) {
       if (session || !supported || !Object.hasOwn(phrases, action)) return;
 
+      const deadline = browser.performance.now() + limit;
       let recognition;
       try {
         recognition = new Recognition();
@@ -65,17 +75,18 @@
         return;
       }
 
-      const attempt = { recognition };
+      const attempt = { recognition, deadline };
       session = attempt;
       recognition.onaudiostart = () => {
-        if (session === attempt) onStatus("listening");
-        else abort(recognition);
+        // A delayed microphone permission can outlive this attempt.
+        if (session !== attempt) abort(recognition);
+        else if (isLive(attempt)) onStatus("listening");
       };
       recognition.onaudioend = () => {
-        if (session === attempt) onStatus("processing");
+        if (isLive(attempt)) onStatus("processing");
       };
       recognition.onresult = (event) => {
-        if (session !== attempt) return;
+        if (!isLive(attempt)) return;
         const result = event.results[event.resultIndex];
         if (!result?.isFinal) return;
         const matches = normalize(result[0]?.transcript ?? "") === phrases[action];
@@ -83,8 +94,11 @@
           onCommand(action);
         }
       };
-      recognition.onnomatch = () => finish(attempt, "unrecognized");
+      recognition.onnomatch = () => {
+        if (isLive(attempt)) finish(attempt, "unrecognized");
+      };
       recognition.onerror = ({ error }) => {
+        if (!isLive(attempt)) return;
         const status = {
           "no-speech": "empty",
           "not-allowed": "denied",
@@ -94,7 +108,12 @@
       };
       recognition.onend = () => finish(attempt, "empty", true);
 
+      attempt.timer = browser.setTimeout(
+        () => finish(attempt, "empty"),
+        Math.max(0, Math.ceil(deadline - browser.performance.now())),
+      );
       onStatus("starting");
+      if (!isLive(attempt)) return;
       try {
         recognition.start();
       } catch {
